@@ -21,6 +21,5 @@ def convert_to_json_instances(input):
     
     with open('instances.json', 'w') as f:
         json.dump(instances, f, indent=4)
-        
 
 convert_to_json_instances('trips.csv')

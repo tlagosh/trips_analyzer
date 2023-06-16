@@ -16,8 +16,9 @@ class Viaje(db.Model):
     destination_lon = Column(Float)
     datetime = Column(DateTime)
     datasource = Column(String)
+    cluster_id = Column(Integer)
 
-    def __init__(self, region, origin_lat, origin_lon, destination_lat, destination_lon, datetime, datasource):
+    def __init__(self, region, origin_lat, origin_lon, destination_lat, destination_lon, datetime, datasource, cluster_id=None):
         self.region = region
         self.origin_lat = origin_lat
         self.origin_lon = origin_lon
@@ -25,6 +26,8 @@ class Viaje(db.Model):
         self.destination_lon = destination_lon
         self.datetime = datetime
         self.datasource = datasource
+        self.cluster_id = cluster_id
+
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
