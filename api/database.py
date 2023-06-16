@@ -1,5 +1,5 @@
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 db = SQLAlchemy()
-db_uri = 'postgresql://postgres:cordiA24@localhost:5432/trip_analyzer'
+db_uri = os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')

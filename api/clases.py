@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import relationship
 from database import db
 
@@ -16,9 +16,11 @@ class Viaje(db.Model):
     destination_lon = Column(Float)
     datetime = Column(DateTime)
     datasource = Column(String)
-    cluster_id = Column(Integer)
+    origin_cluster_id = Column(Integer)
+    destination_cluster_id = Column(Integer)
+    hour_cluster_id = Column(Integer)
 
-    def __init__(self, region, origin_lat, origin_lon, destination_lat, destination_lon, datetime, datasource, cluster_id=None):
+    def __init__(self, region, origin_lat, origin_lon, destination_lat, destination_lon, datetime, datasource, origin_cluster_id, destination_cluster_id, hour_cluster_id):
         self.region = region
         self.origin_lat = origin_lat
         self.origin_lon = origin_lon
@@ -26,7 +28,9 @@ class Viaje(db.Model):
         self.destination_lon = destination_lon
         self.datetime = datetime
         self.datasource = datasource
-        self.cluster_id = cluster_id
+        self.origin_cluster_id = origin_cluster_id
+        self.destination_cluster_id = destination_cluster_id
+        self.hour_cluster_id = hour_cluster_id
 
 
     def __repr__(self):
@@ -41,5 +45,31 @@ class Viaje(db.Model):
             'destination_lat': self.destination_lat,
             'destination_lon': self.destination_lon,
             'datetime': self.datetime,
-            'datasource': self.datasource
+            'datasource': self.datasource,
+            'origin_cluster_id': self.origin_cluster_id,
+            'destination_cluster_id': self.destination_cluster_id,
+            'hour_cluster_id': self.hour_cluster_id
+        }
+
+# Implementamos la clase Health para verificar el estado de la API y sus servicios
+class Health(db.Model):
+
+    __tablename__ = 'health'
+
+    id = Column(Integer, primary_key=True)
+    service = Column(String)
+    status = Column(String)
+
+    def __init__(self, service, status):
+        self.status = status
+        self.service = service
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'service': self.service,
+            'status': self.status
         }
