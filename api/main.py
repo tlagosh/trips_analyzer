@@ -4,9 +4,7 @@
 from flask import request, jsonify
 from clases import Viaje, Health
 from database import db
-from sqlalchemy.sql import func
 from clustering import cluster_por_region, añadir_viaje_a_cluster
-import threading
 from app import app
 from datetime import datetime
 import math
@@ -60,12 +58,12 @@ def distancia(lat1, lon1, lat2, lon2):
 def get_viajes():
     viajes = Viaje.query.all()
     viajes = list(map(lambda viaje: viaje.serialize(), viajes))
-    return jsonify(viajes)
+    return jsonify(viajes), 200
 
 @app.route('/viajes/<id>', methods=['GET'])
 def get_viaje(id):
     viaje = Viaje.query.get(id)
-    return jsonify(viaje.serialize())
+    return jsonify(viaje.serialize()), 200
 
 # post para crear un viaje (Se le asigna automáticamente un id y se le asignan clusters según los viajes que ya existen)
 @app.route('/viajes', methods=['POST'])
@@ -102,7 +100,7 @@ def create_viaje():
     health.status = 'OK'
     db.session.commit()
 
-    return jsonify(nuevo_viaje.serialize())
+    return jsonify(nuevo_viaje.serialize()), 201
 
 # post para crear varios viajes a la vez (después de crearlos es necesario usar el endpoint /clusterize para clusterizarlos)
 @app.route('/viajes/bulk', methods=['POST'])
@@ -124,7 +122,7 @@ def create_viajes():
         )
         db.session.add(nuevo_viaje)
     db.session.commit()
-    return jsonify({'message': 'Viajes creados exitosamente'})
+    return jsonify({'message': 'Viajes creados exitosamente'}), 201
 
 
 @app.route('/viajes/<id>', methods=['PUT'])
@@ -139,7 +137,7 @@ def update_viaje(id):
     viaje.datetime = datetime
     viaje.datasource = request.json['datasource']
     db.session.commit()
-    return jsonify(viaje.serialize())
+    return jsonify(viaje.serialize()), 200
 
 
 @app.route('/viajes/<id>', methods=['DELETE']) 
@@ -147,7 +145,7 @@ def delete_viaje(id):
     viaje = Viaje.query.get(id)
     db.session.delete(viaje)
     db.session.commit()
-    return jsonify(viaje.serialize())
+    return jsonify(viaje.serialize()), 200
 
 ### SERVICIOS ###
 
@@ -200,7 +198,7 @@ def get_week_mean():
     health.status = 'OK'
     db.session.commit()
     
-    return jsonify({'week_mean': promedio_semanal})
+    return jsonify({'week_mean': promedio_semanal}), 200
 
 # Endpoint actualizar los clusters de los viajes
 @app.route('/clusterize', methods=['PUT'])
@@ -247,7 +245,7 @@ def clustering():
     health.status = 'OK'
     db.session.commit()
 
-    return jsonify({'message': 'Clustering realizado exitosamente'})
+    return jsonify({'message': 'Clustering realizado exitosamente'}), 200
 
 # Endpoint para obtener el estado de la ingesta de datos
 @app.route('/health', methods=['GET'])
@@ -257,7 +255,7 @@ def health():
 
     if service in ['data_ingestion', 'clusterize', 'weekmean']:
         health = db.session.query(Health).filter(Health.service == service).first()
-        return jsonify(health.serialize())
+        return jsonify(health.serialize()), 200
     else:
         return jsonify({'message': 'Servicio no encontrado'}), 404
 

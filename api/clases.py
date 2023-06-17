@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime
-from sqlalchemy.orm import relationship
 from database import db
 
 # Viaje: region,origin_coord,destination_coord,datetime,datasource
